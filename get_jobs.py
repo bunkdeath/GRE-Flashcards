@@ -23,10 +23,10 @@ plist = """<?xml version="1.0" encoding="UTF-8"?>
   <true/>
 
   <key>StandardErrorPath</key>
-  <string>/var/log/com.bunkdeath.greflashcards.err</string>
+  <string>%s/com.bunkdeath.greflashcards.err</string>
 
   <key>StandardOutPath</key>
-  <string>/var/log/com.bunkdeath.greflashcards.out</string>
+  <string>%s/com.bunkdeath.greflashcards.out</string>
 </dict>
 </plist>"""
 
@@ -43,11 +43,14 @@ def correct_path(path):
 def help():
 	print "./get_jobs.py -h <hour> -m <minute>"
 
-def get_plist(script_file, hour, minute):
+def get_plist(path, hour, minute):
+	script_file = os.path.join(path, 'gre_flashcards.py')
 	if hour or minute:
 		time = int(minute)*60 + int(hour)*60*60
-		print plist % (script_file, time)
-		# print "%s,%s * * * * %s" % (hour, minute, script_name)
+		plist_content = plist % (script_file, time, path, path)
+		plist_file = open("com.bunkdeath.greflashcards.plist", "w")
+		plist_file.write(plist_content)
+		plist_file.close()
 	else:
 		help()
 
@@ -80,8 +83,7 @@ def get_time():
 
 if __name__ == "__main__":
 	path = os.getcwd()
-	script_file = os.path.join(path, 'gre_flashcards.py')
 	correct_path(path)
 	
 	hour, minute = get_time()
-	get_plist(script_file, hour, minute)
+	get_plist(path, hour, minute)
